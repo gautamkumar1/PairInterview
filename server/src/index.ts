@@ -5,6 +5,7 @@ dotenv.config();
 import { auth } from "./utils/auth.js";
 import {toNodeHandler } from "better-auth/node";
 import cors from "cors";
+import chatRouter from "./routers/chatRouter.js";
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(cors({
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Hello World" });
 });
+app.use("/api/chat", chatRouter);
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

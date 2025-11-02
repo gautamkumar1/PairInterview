@@ -14,5 +14,6 @@ export async function isAuthenticated(req: Request, res: Response, next: NextFun
   }
 
   (req as any).user = session.user;
+  console.log("user", (req as any).user);
   next();
 }
