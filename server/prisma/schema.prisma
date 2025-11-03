@@ -15,19 +15,21 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  name          String
-  emailVerified Boolean   @default(false)
-  image         String?
-  sessions      Session[]
-  accounts      Account[]
+  id                  String          @id @default(uuid())
+  email               String          @unique
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  name                String
+  emailVerified       Boolean         @default(false)
+  image               String?
+  sessions            Session[]
+  accounts            Account[]
+  hostSessions        SessionSchema[] @relation("HostSessions")
+  participantSessions SessionSchema[] @relation("ParticipantSessions")
 
   @@map("user")
 }
-
+// authentication models
 model Session {
   id        String   @id
   expiresAt DateTime
@@ -71,4 +73,32 @@ model Verification {
   updatedAt  DateTime @default(now()) @updatedAt
 
   @@map("verification")
+}
+
+// problem solving session models
+model SessionSchema {
+  id            String     @id @default(cuid())
+  problem       String
+  difficulty    Difficulty
+  hostId        String
+  participantId String?
+  status        Status     @default(active)
+  callId        String     @default("")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  host        User  @relation("HostSessions", fields: [hostId], references: [id])
+  participant User? @relation("ParticipantSessions", fields: [participantId], references: [id])
+}
+
+enum Difficulty {
+  easy
+  medium
+  hard
+}
+
+enum Status {
+  active
+  completed
 }

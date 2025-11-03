@@ -1,4 +1,5 @@
 import { StreamChat } from "stream-chat";
+import {StreamClient} from "@stream-io/node-sdk";
 import dotenv from "dotenv";
 dotenv.config();
 const streamApiKey = process.env.STREAM_API_KEY!;
@@ -12,11 +13,12 @@ interface userData {
     email: string;
     image: string;
 }
-export const streamClient = StreamChat.getInstance(streamApiKey, streamApiSecret);
+export const chatClient = StreamChat.getInstance(streamApiKey, streamApiSecret);  // this is the chat client
+export const streamClient = new StreamClient(streamApiKey, streamApiSecret); // this is the stream client(video)
 
 export const upsertStreamUser = async (userData: userData) => {
     try {
-        await streamClient.upsertUser(userData);
+        await chatClient.upsertUser(userData);
         console.log("Stream user upserted successfully", userData);
         return true;
     } catch (error) {
@@ -27,7 +29,7 @@ export const upsertStreamUser = async (userData: userData) => {
 
 export const deleteStreamUser = async (userData: userData) => {
     try {
-        await streamClient.deleteUser(userData.id);
+        await chatClient.deleteUser(userData.id);
         console.log("Stream user deleted successfully", userData);
         return true;
     } catch (error) {

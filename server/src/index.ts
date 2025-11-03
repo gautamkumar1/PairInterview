@@ -5,7 +5,9 @@ dotenv.config();
 import { auth } from "./utils/auth.js";
 import {toNodeHandler } from "better-auth/node";
 import cors from "cors";
-import chatRouter from "./routers/chatRouter.js";
+import chatRouter from "./routers/chatRoutes.js";
+import sessionsRouter from "./routers/sessionsRoutes.js";
+import { connectDB } from "./utils/db.js";
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(cors({
@@ -19,6 +21,13 @@ app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Hello World" });
 });
 app.use("/api/chat", chatRouter);
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.use("/api/sessions", sessionsRouter);
+
+connectDB().then(() => {
+  app.listen(port, () => {
+      console.log(`Server running on http://localhost:${port}`)
+  })
+}).catch((error: any) => {
+  console.error('Failed to start server due to database connection error:', error);
+  process.exit(1);
 });
