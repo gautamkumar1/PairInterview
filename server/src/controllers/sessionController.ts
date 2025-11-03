@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { prisma } from "../utils/db.js";
 import { chatClient, streamClient } from "../utils/stream.js";
 export const createSession = async (request: Request, response: Response) => {
+    let session;
     try {
         const { problem, difficulty } = request.body;
         if (!problem || !difficulty) {
@@ -11,7 +12,7 @@ export const createSession = async (request: Request, response: Response) => {
         // generate a unique call id for stream video
         const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
         // create a new session
-        const session = await prisma.sessionSchema.create({
+        session = await prisma.sessionSchema.create({
             data: {
                 problem,
                 difficulty,
@@ -41,6 +42,12 @@ export const createSession = async (request: Request, response: Response) => {
         });
     } catch (error) {
         console.error("Error creating session", error);
+        // delete session if it was created but failed to create stream video call or chat messaging
+        if (session) {
+            await prisma.sessionSchema.delete({
+                where: { id: session.id }
+            })
+        }
         return response.status(500).json({
             message: "Error creating session",
             error: error
@@ -145,14 +152,14 @@ export const joinSession = async (request: Request, response: Response) => {
         if (session.participantId) {
             return response.status(409).json({ message: "Session is full" });
         }
+        // join session
+        const channel = chatClient.channel("messaging", session.callId);
+        await channel.addMembers([userId]);
         // update session with participant id
         await prisma.sessionSchema.update({
             where: { id: session.id },
             data: { participantId: userId }
         })
-        // join session
-        const channel = chatClient.channel("messaging", session.callId);
-        await channel.addMembers([userId]);
         return response.status(200).json({ message: "Joined session successfully", session });
     } catch (error) {
         console.error("Error joining session", error);
@@ -183,18 +190,17 @@ export const endSession = async (request: Request, response: Response) => {
         if (session.hostId.toString() !== userId.toString()) {
             return response.status(400).json({ message: "Cannot end a session that you are not the host of" });
         }
-
+        // update session status to completed
+        await prisma.sessionSchema.update({
+            where: { id: session.id },
+            data: { status: "completed" }
+        })
         // delete stream video call
         const videoCall = streamClient.video.call("default", session.callId);
         await videoCall.delete();
         // delete chat messaging
         const channel = chatClient.channel("messaging", session.callId);
         await channel.delete();
-        // update session status to completed
-        await prisma.sessionSchema.update({
-            where: { id: session.id },
-            data: { status: "completed" }
-        })
         return response.status(200).json({ message: "Session ended successfully", session });
     } catch (error) {
         console.error("Error ending session", error);
