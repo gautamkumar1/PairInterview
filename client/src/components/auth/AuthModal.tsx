@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 interface AuthModalProps {
   open: boolean;
@@ -36,6 +37,17 @@ export default function AuthModal({
   const switchText =
     mode === "signup" ? "Sign in to your account" : "Sign up to get started";
 
+  const handleGoogleSignIn = async () => {
+    try {
+      // @ts-ignore
+      const data = await authClient.signIn.social({
+        provider: "google",
+        callbackURL:`${import.meta.env.VITE_FRONTEND_DEV_URL}/problems`
+      });
+    } catch (error) {
+      console.error("Error signing in with Google", error);
+    }
+  }
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-black text-white border border-neutral-800 sm:max-w-md transition-all duration-300">
@@ -48,6 +60,7 @@ export default function AuthModal({
           <Button
             variant="outline"
             className="w-full bg-transparent border border-neutral-700 text-white hover:bg-neutral-900 flex items-center justify-center gap-2"
+            onClick={handleGoogleSignIn}
           >
             <FcGoogle size={20} />
             Continue with Google

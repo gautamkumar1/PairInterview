@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
 import AuthModal from "../auth/AuthModal";
+import AuthUserButton from "../auth/AuthUserButton";
+import { authClient } from "@/lib/auth-client";
 
 export default function NavbarComponent() {
   const navItems = [
@@ -31,6 +33,8 @@ export default function NavbarComponent() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const { data: session, isPending } = authClient.useSession();
+  if (isPending) return <div>Loading...</div>;
   return (
     <div className="relative w-full">
       <Navbar>
@@ -39,8 +43,18 @@ export default function NavbarComponent() {
           <NavbarLogo />
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
-            
-            <NavbarButton variant="primary" onClick={() => setIsAuthModalOpen(true)}>Sign Up</NavbarButton>
+            {session
+              ?
+              <>
+                <AuthUserButton />
+              </>
+              :
+              <>
+                <NavbarButton variant="primary" onClick={() => setIsAuthModalOpen(true)}>Get Started</NavbarButton>
+              </>
+            }
+
+
           </div>
         </NavBody>
 
@@ -69,20 +83,16 @@ export default function NavbarComponent() {
               </a>
             ))}
             <div className="flex w-full flex-col gap-4">
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton>
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Book a call
-              </NavbarButton>
+              {session
+                ?
+                <>
+                  <AuthUserButton />
+                </>
+                :
+                <>
+                  <NavbarButton variant="primary" onClick={() => setIsAuthModalOpen(true)}>Get Started</NavbarButton>
+                </>
+              }
             </div>
           </MobileNavMenu>
         </MobileNav>
