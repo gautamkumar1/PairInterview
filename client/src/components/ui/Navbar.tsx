@@ -33,8 +33,7 @@ export default function NavbarComponent() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { data: session, isPending } = authClient.useSession();
-  if (isPending) return <div>Loading...</div>;
+  const { data: session } = authClient.useSession();
   return (
     <div className="relative w-full">
       <Navbar>

@@ -2,6 +2,7 @@
 import { getUserSession } from "../api/api";
 import { useQuery } from "@tanstack/react-query";
 import CustomAvatar from "../ui/customAvatar";
+import CustomAvatarSkeleton from "@/skeletons/customAvatarSkeleton";
 interface SessionData {
   user: {
     name: string;
@@ -15,7 +16,7 @@ export default function AuthUserButton() {
     queryKey: ["session"],
     queryFn: () => getUserSession(),
   });
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <div><CustomAvatarSkeleton/></div>;
   if (isError) return <div>Error: {isError}</div>;
   return <>
   <div>

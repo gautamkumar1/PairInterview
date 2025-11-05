@@ -25,8 +25,13 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ data }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
   const handleSignOut = async () => {
-    await authClient.signOut()
-    navigate("/");
+    try {
+      await authClient.signOut();
+      navigate("/");
+    } catch (error) {
+      console.error("Sign out failed:", error);
+      // Consider showing a toast notification to the user
+    }
   };
   return (
     <div className="relative" ref={dropdownRef}>
@@ -56,30 +61,15 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ data }) => {
               {data?.user.email}
             </div>
           </div>
-
-          {/* Menu links */}
-          <ul className="py-2 text-sm">
-            {["Dashboard", "Settings", "Earnings"].map((item) => (
-              <li key={item}>
-                <a
-                  href="#"
-                  className="block px-4 py-2 hover:bg-accent hover:text-accent-foreground transition-colors duration-150"
-                >
-                  {item}
-                </a>
-              </li>
-            ))}
-          </ul>
-
           {/* Sign out */}
           <div className="py-1">
-            <a
-              href="#"
+            <button
+              type="button"
               className="block px-4 py-2 text-sm hover:bg-destructive hover:text-destructive-foreground transition-colors duration-150"
               onClick={handleSignOut}
             >
               Sign out
-            </a>
+            </button>
           </div>
         </div>
       )}
