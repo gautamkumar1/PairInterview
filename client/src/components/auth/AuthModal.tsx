@@ -9,6 +9,7 @@ import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { LoaderCircle } from "lucide-react";
 
 interface AuthModalProps {
   open: boolean;
@@ -22,6 +23,7 @@ export default function AuthModal({
   initialMode = "signup",
 }: AuthModalProps) {
   const [mode, setMode] = useState<"signup" | "signin">(initialMode);
+  const [isLoading,setLoading] = useState<boolean>(false)
 
   const toggleMode = () => setMode(mode === "signup" ? "signin" : "signup");
 
@@ -37,17 +39,20 @@ export default function AuthModal({
   const switchText =
     mode === "signup" ? "Sign in to your account" : "Sign up to get started";
 
-  const handleGoogleSignIn = async () => {
-    try {
-      // @ts-ignore
-      const data = await authClient.signIn.social({
-        provider: "google",
-        callbackURL:`${import.meta.env.VITE_FRONTEND_DEV_URL}/problems`
-      });
-    } catch (error) {
-      console.error("Error signing in with Google", error);
-    }
-  }
+    const handleGoogleSignIn = async () => {
+      try {
+        setLoading(true);
+        await authClient.signIn.social({
+          provider: "google",
+          callbackURL: `${import.meta.env.VITE_FRONTEND_DEV_URL}/problems`,
+        });
+      } catch (error) {
+        console.error("Error signing in with Google", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="bg-black text-white border border-neutral-800 sm:max-w-md transition-all duration-300">
@@ -59,11 +64,12 @@ export default function AuthModal({
         <div className="mt-6 flex flex-col gap-3">
           <Button
             variant="outline"
+            disabled={isLoading}
             className="w-full bg-transparent border border-neutral-700 text-white hover:bg-neutral-900 flex items-center justify-center gap-2"
             onClick={handleGoogleSignIn}
           >
             <FcGoogle size={20} />
-            Continue with Google
+            {isLoading ? <LoaderCircle className="animate-spin" /> : "Continue with Google"}
           </Button>
 
           <Button
