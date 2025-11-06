@@ -98,7 +98,6 @@ function getDifficultyColor(difficulty: string): string {
   }
 
 export default function Dashboard() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [joinedSessions, setJoinedSessions] = useState<number[]>([])
 
   const activeSessionCount = liveSessions.length
@@ -117,29 +116,12 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex h-screen">
-      {/* Sidebar */}
-      <div
-        className={`${sidebarCollapsed ? "w-16" : "w-70"} bg-sidebar border-r border-sidebar-border transition-all duration-300 fixed md:relative z-50 md:z-auto h-full`}
-      >
-        <div className="p-4">
-          <div className="flex items-center justify-between mb-8">
-            <div className={`${sidebarCollapsed ? "hidden" : "block"}`}>
-              <h1 className="text-primary font-bold text-lg tracking-wider">PRACTICE HUB</h1>
-              <p className="text-muted-foreground text-xs">v2.1.7</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Dashboard Content */}
-        <div className="flex-1 overflow-auto">
+    <div className="flex flex-col h-screen overflow-hidden">
+      {/* Dashboard Content */}
+      <div className="flex-1 overflow-auto">
           <div className="p-6 space-y-6">
             {/* Quick Start Section */}
             <div>
-              <h2 className="text-lg font-bold text-foreground tracking-wider mb-4">QUICK START</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <Button className="h-24 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-lg flex items-center justify-center gap-3">
                   <Play className="w-6 h-6" />
@@ -357,7 +339,6 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
     </div>
   )
 }
