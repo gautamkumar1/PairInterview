@@ -1,10 +1,9 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
-// import DashboardLayout from "./layouts/DashboardLayout";
 import Home from "@/pages/Home";
 import ProblemsPage from "./pages/ProblemsPage";
-// import Dashboard from "./pages/Dashboard";
-// import Profile from "./pages/Profile";
+import DashboardLayout from "./layouts/DashboardLayout";
+import Dashboard from "./components/ui/dashboard";
 
 const router = createBrowserRouter([
   {
@@ -15,16 +14,15 @@ const router = createBrowserRouter([
       {
         path:"problems",
         element:<ProblemsPage/>
-      }
+      },
       // for later use
-      // {
-      //   path: "dashboard",
-      //   element: <DashboardLayout />, // ✅ nested layout
-      //   children: [
-      //     { index: true, element: <Dashboard /> },
-      //     { path: "profile", element: <Profile /> },
-      //   ],
-      // },
+      {
+        path: "dashboard",
+        element: <DashboardLayout />, // ✅ nested layout
+        children: [
+          { index: true, element: <Dashboard /> },
+        ],
+      },
     ],
   },
 ]);
