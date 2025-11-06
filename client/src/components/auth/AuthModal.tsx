@@ -30,13 +30,13 @@ export default function AuthModal({
 
   const toggleMode = () => setMode(mode === "signup" ? "signin" : "signup");
 
-  const title = mode === "signup" ? "Create account" : "Welcome to Template";
+  const title = mode === "signup" ? "Create account" : "Welcome to PairInterview";
   const subtitle =
     mode === "signup"
-      ? "Sign up to get started with Template"
+      ? "Sign up to get started with PairInterview"
       : "Sign in to continue where you left off";
   const footerText =
-    mode === "signup" ? "ALREADY HAVE AN ACCOUNT?" : "NEW TO Template?";
+    mode === "signup" ? "ALREADY HAVE AN ACCOUNT?" : "NEW TO PairInterview?";
   const switchText =
     mode === "signup" ? "Sign in to your account" : "Sign up to get started";
 
