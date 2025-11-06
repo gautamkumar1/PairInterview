@@ -1,4 +1,10 @@
+import PairInterviewHero from "@/components/ui/pairinterview-landing";
+
 export default function Home() {
-    return <h3>🏠 Welcome to Home</h3>;
+    return <>
+    <div>
+      <PairInterviewHero/>
+    </div>
+    </>
   }
   
