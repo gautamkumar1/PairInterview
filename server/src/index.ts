@@ -11,7 +11,7 @@ import { connectDB } from "./utils/db.js";
 const port = process.env.PORT || 3000;
 const app = express();
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: process.env.FRONTEND_URL,
   credentials: true,
 }));
 app.all("/api/auth/*splat", toNodeHandler(auth));
