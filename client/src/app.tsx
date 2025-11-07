@@ -4,6 +4,7 @@ import Home from "@/pages/Home";
 import ProblemsPage from "./pages/ProblemsPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./components/ui/dashboard";
+import ProblemDetailsPage from "./pages/ProblemDetailsPage";
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,10 @@ const router = createBrowserRouter([
       {
         path:"problems",
         element:<ProblemsPage/>
+      },
+      {
+        path:"problem/:id",
+        element:<ProblemDetailsPage/>
       },
       // for later use
       {

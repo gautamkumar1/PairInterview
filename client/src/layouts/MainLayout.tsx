@@ -5,10 +5,11 @@ import { Outlet, useLocation } from "react-router-dom";
 export default function MainLayout() {
   const location = useLocation();
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isProblemPage = location.pathname.startsWith("/problem")
 
   return (
     <div className="flex flex-col min-h-screen w-full">
-      {!isDashboard && (
+      {!isDashboard || (!isDashboard && !isProblemPage) && (
         <header>
           <NavbarComponent />
         </header>
@@ -18,10 +19,14 @@ export default function MainLayout() {
       <main className="flex-grow">
         <Outlet />
       </main>
-
-      <footer>
-        <MinimalSocialsFooter />
-      </footer>
+      {
+        !isProblemPage && (
+          <footer>
+          <MinimalSocialsFooter />
+        </footer>
+        )
+      }
+     
     </div>
   );
 }

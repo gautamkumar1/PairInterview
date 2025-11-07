@@ -2,6 +2,8 @@ import { useState } from "react"
 import { Play, Zap, TrendingUp, Clock, Target, Activity, Users, LogIn, RotateCcw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { NavLink } from "react-router-dom"
+
 
 const liveSessions = [
     {
@@ -84,7 +86,7 @@ function getTimeAgo(date: Date): string {
     return `${daysAgo}d ago`
 }
 
-function getDifficultyColor(difficulty: string): string {
+export function getDifficultyColor(difficulty: string): string {
     switch (difficulty) {
         case "Easy":
             return "bg-green-500/20 text-green-400"
@@ -123,9 +125,11 @@ export default function Dashboard() {
                     {/* Quick Start Section */}
                     <div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <Button className="h-24 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-lg flex items-center justify-center gap-3">
-                                <Play className="w-6 h-6" />
-                                Start Solo Practice
+                            <Button asChild className="h-24 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-lg flex items-center justify-center gap-3">
+                                <NavLink to="/problems" target="_blank">
+                                    <Play className="w-6 h-6" />
+                                    Start Solo Practice
+                                </NavLink>
                             </Button>
                             <Button className="h-24 bg-secondary hover:bg-secondary/80 text-secondary-foreground font-bold text-lg rounded-lg flex items-center justify-center gap-3">
                                 <Users className="w-6 h-6" />
@@ -279,8 +283,8 @@ export default function Dashboard() {
                                                 <div className="text-xs text-muted-foreground">Participants: {session.participants}</div>
                                                 <span
                                                     className={`inline-flex items-center text-[10px] font-semibold px-2.5 py-0.5 rounded-full ${session.status === "Completed"
-                                                            ? "bg-primary/15 text-primary ring-1 ring-primary/30"
-                                                            : "bg-destructive/15 text-destructive ring-1 ring-destructive/30"
+                                                        ? "bg-primary/15 text-primary ring-1 ring-primary/30"
+                                                        : "bg-destructive/15 text-destructive ring-1 ring-destructive/30"
                                                         }`}
                                                 >
                                                     {session.status}

@@ -844,8 +844,11 @@ print(isAnagram("rat", "car"))  # Expected: False`,
     },
   },
 };
+// it will have all type of key
+export type ProblemId = keyof typeof PROBLEMS;
+export type Language = keyof typeof LANGUAGE_CONFIG;
 
-  export const LANGUAGE_CONFIG = {
+export const LANGUAGE_CONFIG = {
     javascript: {
       name: "JavaScript",
       icon: "/javascript.png",
