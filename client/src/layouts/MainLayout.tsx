@@ -9,7 +9,7 @@ export default function MainLayout() {
 
   return (
     <div className="flex flex-col min-h-screen w-full">
-      {!isDashboard || (!isDashboard && !isProblemPage) && (
+      {!isDashboard && !isProblemPage && (
         <header>
           <NavbarComponent />
         </header>
