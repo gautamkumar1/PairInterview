@@ -1,18 +1,27 @@
-"use client"
-
 import { useState, useMemo } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { ArrowRight, Code2, Filter, Search } from "lucide-react"
+import { ArrowRight, Code2, Search } from "lucide-react"
+import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
-import { PROBLEMS } from "@/data/dsa-problem.ts" // adjust path
+import { PROBLEMS } from "@/data/dsa-problem.ts" 
 
 export default function ProblemsPage() {
+  const navigate = useNavigate()
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("All")
   const [searchTerm, setSearchTerm] = useState<string>("")
 
   const difficulties = ["All", "Easy", "Medium", "Hard"]
+
+  // Convert problem title to URL-friendly slug
+  // e.g., "Valid Palindrome" -> "valid-palindrome"
+  const titleToSlug = (title: string): string => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+  }
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -141,6 +150,7 @@ export default function ProblemsPage() {
                 {/* Right */}
                 <Button
                   variant="ghost"
+                  onClick={() => navigate(`/problem/${titleToSlug(problem.title)}`)}
                   className="text-xs sm:text-sm text-primary hover:text-primary/80 flex items-center gap-1"
                 >
                   Solve
