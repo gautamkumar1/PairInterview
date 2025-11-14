@@ -32,9 +32,16 @@ function ProblemDetailsPage() {
         (id as ProblemId) || "two-sum"
     );
     const [selectedLanguage, setSelectedLanguage] = useState<Language>("javascript");
-    const [code, setCode] = useState(
-        PROBLEMS[currentProblemId].starterCode.javascript
-    );
+    // Store code per language to preserve user's code when switching languages
+    const [codeByLanguage, setCodeByLanguage] = useState<Record<Language, string>>(() => {
+        const problem = PROBLEMS[(id as ProblemId) || "two-sum"];
+        return {
+            javascript: problem.starterCode.javascript,
+            python: problem.starterCode.python,
+            java: problem.starterCode.java,
+        };
+    });
+    const code = codeByLanguage[selectedLanguage];
     const [output, setOutput] = useState<ExecuteResult | null>(null);
     const [isRunning, setIsRunning] = useState(false);
     const [testCaseResults, setTestCaseResults] = useState<TestCaseResult[]>([]);
@@ -44,21 +51,34 @@ function ProblemDetailsPage() {
     useEffect(() => {
         if (id && isProblemId(id)) {
             setCurrentProblemId(id);
-            setCode(PROBLEMS[id].starterCode[selectedLanguage]);
+            // Initialize code for all languages when problem changes
+            const newProblem = PROBLEMS[id];
+            setCodeByLanguage({
+                javascript: newProblem.starterCode.javascript,
+                python: newProblem.starterCode.python,
+                java: newProblem.starterCode.java,
+            });
             setOutput(null);
             setTestCaseResults([]);
         }
-    }, [id, selectedLanguage]);
+    }, [id]);
 
     const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newLang = e.target.value as Language;
         setSelectedLanguage(newLang);
-        setCode(currentProblem.starterCode[newLang]);
+        // Code is automatically loaded from codeByLanguage[newLang] via the computed `code` variable
         setOutput(null);
         setTestCaseResults([]);
     };
 
     const handleProblemChange = (newProblemId: string) => navigate(`/problem/${newProblemId}`);
+
+    const handleCodeChange = (newCode: React.SetStateAction<string>) => {
+        setCodeByLanguage(prev => ({
+            ...prev,
+            [selectedLanguage]: typeof newCode === 'function' ? newCode(prev[selectedLanguage]) : newCode,
+        }));
+    };
 
     const triggerConfetti = () => {
         confetti({
@@ -176,7 +196,7 @@ function ProblemDetailsPage() {
                       code={code}
                       isRunning={isRunning}
                       onLanguageChange={handleLanguageChange}
-                      onCodeChange={setCode}
+                      onCodeChange={handleCodeChange}
                       onRunCode={handleRunCode}
                     />
                   </Panel>
@@ -186,7 +206,7 @@ function ProblemDetailsPage() {
                   {/* Bottom panel - Output Panel*/}
     
                   <Panel defaultSize={30} minSize={20}>
-                    <OutputPanel output={output} testCaseResults={testCaseResults} />
+                    <OutputPanel output={output} testCaseResults={testCaseResults} isRunning={isRunning} />
                   </Panel>
                 </PanelGroup>
               </Panel>

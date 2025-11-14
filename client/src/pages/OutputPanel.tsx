@@ -2,16 +2,69 @@
 
 import { type ExecuteResult, type TestCaseResult } from "./ProblemDetailsPage"
 import { cn } from "@/lib/utils"
-import { Terminal, CheckCircle2, XCircle, Check, X } from "lucide-react"
+import { Terminal, CheckCircle2, XCircle, Check, X, Loader2 } from "lucide-react"
+import { useEffect, useState } from "react"
 
 type OutputPanelProps = {
   output: ExecuteResult | null
   testCaseResults: TestCaseResult[]
+  isRunning: boolean
 }
 
-export default function OutputPanel({ output, testCaseResults }: OutputPanelProps) {
+const executionSteps = [
+  { text: "Compiling code...", delay: 300 },
+  { text: "Initializing runtime...", delay: 400 },
+  { text: "Running test cases...", delay: 500 },
+  { text: "Validating output...", delay: 300 },
+];
+
+export default function OutputPanel({ output, testCaseResults, isRunning }: OutputPanelProps) {
   const allTestsPassed = testCaseResults.length > 0 && testCaseResults.every(tc => tc.passed);
   const hasTestResults = testCaseResults.length > 0;
+  const [currentStep, setCurrentStep] = useState(0);
+  const [displayedText, setDisplayedText] = useState("");
+
+  useEffect(() => {
+    if (!isRunning) {
+      setCurrentStep(0);
+      setDisplayedText("");
+      return;
+    }
+
+    let stepIndex = 0;
+    let charIndex = 0;
+    let timeoutId: NodeJS.Timeout;
+
+    const typeNextChar = () => {
+      if (stepIndex >= executionSteps.length) {
+        stepIndex = 0;
+        charIndex = 0;
+      }
+
+      const currentStepData = executionSteps[stepIndex];
+      const fullText = currentStepData.text;
+
+      if (charIndex < fullText.length) {
+        setDisplayedText(fullText.slice(0, charIndex + 1));
+        setCurrentStep(stepIndex);
+        charIndex++;
+        timeoutId = setTimeout(typeNextChar, 50);
+      } else {
+        charIndex = 0;
+        stepIndex++;
+        timeoutId = setTimeout(() => {
+          setDisplayedText("");
+          typeNextChar();
+        }, currentStepData.delay);
+      }
+    };
+
+    typeNextChar();
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isRunning]);
 
   return (
     <div className="h-full flex flex-col bg-card border-l border-border overflow-hidden">
@@ -21,7 +74,12 @@ export default function OutputPanel({ output, testCaseResults }: OutputPanelProp
           <Terminal className="w-4 h-4 text-primary" />
           Test Result
         </div>
-        {output && (
+        {isRunning ? (
+          <div className="flex items-center gap-1.5 text-xs font-medium rounded-full px-2.5 py-1 bg-primary/15 text-primary border border-primary/30">
+            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            Running...
+          </div>
+        ) : output ? (
           <div
             className={cn(
               "flex items-center gap-1.5 text-xs font-medium rounded-full px-2.5 py-1",
@@ -46,12 +104,51 @@ export default function OutputPanel({ output, testCaseResults }: OutputPanelProp
               </>
             )}
           </div>
-        )}
+        ) : null}
       </div>
 
       {/* Test Cases - LeetCode Style */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden">
-        {!output ? (
+        {isRunning ? (
+          <div className="px-4 py-6 flex flex-col items-center justify-center h-full">
+            <div className="flex flex-col items-center gap-4 w-full max-w-md">
+              <div className="relative">
+                <div className="w-16 h-16 border-4 border-border rounded-full"></div>
+                <div className="absolute top-0 left-0 w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+              </div>
+              <div className="w-full space-y-2">
+                <div className="flex items-center gap-2 text-sm font-mono text-foreground">
+                  <span className="text-primary">$</span>
+                  <span className="text-muted-foreground">executing code...</span>
+                </div>
+                <div className="bg-card border border-border rounded-lg p-4 font-mono text-sm">
+                  <div className="space-y-2">
+                    {executionSteps.slice(0, currentStep + 1).map((step, idx) => (
+                      <div
+                        key={idx}
+                        className={cn(
+                          "flex items-center gap-2 transition-opacity",
+                          idx === currentStep ? "opacity-100" : "opacity-60"
+                        )}
+                      >
+                        <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                        <span className={cn(
+                          "text-xs",
+                          idx === currentStep ? "text-foreground" : "text-muted-foreground"
+                        )}>
+                          {idx === currentStep ? displayedText : step.text}
+                          {idx === currentStep && (
+                            <span className="inline-block w-0.5 h-4 bg-primary ml-1 animate-pulse"></span>
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : !output ? (
           <div className="px-4 py-6 text-center">
             <p className="text-muted-foreground italic text-sm">
               Click <span className="text-primary font-medium">"Run Code"</span> to see test results here...
