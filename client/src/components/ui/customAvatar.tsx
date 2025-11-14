@@ -2,6 +2,7 @@ import { authClient } from "@/lib/auth-client";
 import useAuthStore from "@/zustand/store";
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 interface CustomAvatarProps {
   data: {
     user: {
@@ -15,7 +16,7 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useAuthStore();
+  const { verifySession } = useAuthStore();
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -29,12 +30,14 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ data }) => {
   const handleSignOut = async () => {
     try {
       await authClient.signOut();
-      setIsAuthenticated(false);
+      // Verify session to sync state with server after sign out
+      await verifySession();
       navigate("/");
     } catch (error) {
       console.error("Sign out failed:", error);
-      // Consider showing a toast notification to the user
-      setIsAuthenticated(true);
+      // Verify session even on error to ensure state is synced
+      await verifySession();
+      toast.error("Sign out failed. Please try again.");
     }
   };
   return (

@@ -1,8 +1,12 @@
 import MinimalSocialsFooter from "@/components/ui/footer";
 import NavbarComponent from "@/components/ui/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
+import { useAuthSync } from "@/hooks/useAuthSync";
 
 export default function MainLayout() {
+  // Sync auth state with better-auth session on mount and when session changes
+  useAuthSync();
+  
   const location = useLocation();
   const isDashboard = location.pathname.startsWith("/dashboard");
   const isProblemPage = location.pathname.startsWith("/problem")

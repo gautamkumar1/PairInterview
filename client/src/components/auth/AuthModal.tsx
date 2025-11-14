@@ -29,7 +29,7 @@ export default function AuthModal({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const { setIsAuthenticated } = useAuthStore();
+  const { verifySession } = useAuthStore();
 
   const toggleMode = () => setMode(mode === "signup" ? "signin" : "signup");
 
@@ -50,11 +50,12 @@ export default function AuthModal({
         provider: "google" as const,
         callbackURL: `${import.meta.env.VITE_FRONTEND_DEV_URL}/dashboard`,
       });
-      setIsAuthenticated(true);
+      // Verify session to sync state with server
+      await verifySession();
       toast.success("Signed in successfully");
     } catch (error) {
       console.error("Error signing in with Google", error);
-      setIsAuthenticated(false);
+      await verifySession(); // Sync state even on error
     } finally {
       setLoading(false);
     }
@@ -74,21 +75,23 @@ export default function AuthModal({
           onRequest: () => {
             setLoading2(true);
           },
-          onSuccess: () => {
+          onSuccess: async () => {
             toast.success("Sign Up Successfully.")
             onOpenChange(false);
-            setIsAuthenticated(true);
+            // Verify session to sync state with server
+            await verifySession();
           },
-          onError: (ctx) => {
+          onError: async (ctx) => {
             toast.error(ctx.error.message);
             setLoading2(false);
-            setIsAuthenticated(false);
+            // Verify session to sync state even on error
+            await verifySession();
           },
         }
       );
     } catch (error) {
       console.error("Signup error:", error);
-      setIsAuthenticated(false);
+      await verifySession(); // Sync state even on error
     } finally {
       setLoading2(false);
     }
@@ -107,21 +110,23 @@ export default function AuthModal({
           onRequest: () => {
             setLoading2(true);
           },
-          onSuccess: () => {
+          onSuccess: async () => {
             toast.success("Signed in successfully");
             onOpenChange(false);
-            setIsAuthenticated(true);
+            // Verify session to sync state with server
+            await verifySession();
           },
-          onError: (ctx) => {
+          onError: async (ctx) => {
             toast.error(ctx.error.message);
             setLoading2(false);
-            setIsAuthenticated(false);
+            // Verify session to sync state even on error
+            await verifySession();
           },
         }
       );
     } catch (error) {
       console.error("Sign-in error:", error);
-      setIsAuthenticated(false);
+      await verifySession(); // Sync state even on error
     } finally {
       setLoading2(false);
     }
