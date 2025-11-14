@@ -28,20 +28,22 @@ const executeCode = async (language: keyof typeof LANGUAGE_VERSIONS, code: strin
             throw new Error(`Unsupported language: ${language}`);
         }
 
-        const response = await axios.post(`${import.meta.env.VITE_PISTON_API_KEY}/execute`, {
-            methods: "POST",
-            Headers: {
-                "Content-Type": "application/json",
-            },
-            data: {
+        const response = await axios.post(
+            `${import.meta.env.VITE_PISTON_API}/execute`,
+            {
                 language: languageConfig.language,
                 version: languageConfig.version,
                 files: [{
                     name: `main.${fileExtension}`,
                     content: code,
                 }],
+            },
+            {
+                headers: {
+                    "Content-Type": "application/json",
+                }
             }
-        })
+        )
         const result = response.data;
         if (result.error) {
             throw new Error(result.message);
