@@ -10,6 +10,7 @@ import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { LoaderCircle } from "lucide-react";
 import { toast } from "sonner";
+import useAuthStore from "@/zustand/store";
 
 interface AuthModalProps {
   open: boolean;
@@ -27,6 +28,8 @@ export default function AuthModal({
   const [isLoading2, setLoading2] = useState<boolean>(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const { setIsAuthenticated } = useAuthStore();
 
   const toggleMode = () => setMode(mode === "signup" ? "signin" : "signup");
 
@@ -47,9 +50,11 @@ export default function AuthModal({
         provider: "google" as const,
         callbackURL: `${import.meta.env.VITE_FRONTEND_DEV_URL}/dashboard`,
       });
+      setIsAuthenticated(true);
       toast.success("Signed in successfully");
     } catch (error) {
       console.error("Error signing in with Google", error);
+      setIsAuthenticated(false);
     } finally {
       setLoading(false);
     }
@@ -72,15 +77,18 @@ export default function AuthModal({
           onSuccess: () => {
             toast.success("Sign Up Successfully.")
             onOpenChange(false);
+            setIsAuthenticated(true);
           },
           onError: (ctx) => {
             toast.error(ctx.error.message);
             setLoading2(false);
+            setIsAuthenticated(false);
           },
         }
       );
     } catch (error) {
       console.error("Signup error:", error);
+      setIsAuthenticated(false);
     } finally {
       setLoading2(false);
     }
@@ -102,15 +110,18 @@ export default function AuthModal({
           onSuccess: () => {
             toast.success("Signed in successfully");
             onOpenChange(false);
+            setIsAuthenticated(true);
           },
           onError: (ctx) => {
             toast.error(ctx.error.message);
             setLoading2(false);
+            setIsAuthenticated(false);
           },
         }
       );
     } catch (error) {
       console.error("Sign-in error:", error);
+      setIsAuthenticated(false);
     } finally {
       setLoading2(false);
     }

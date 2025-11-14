@@ -12,8 +12,9 @@ import {
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
 import AuthModal from "../auth/AuthModal";
+import useAuthStore from "@/zustand/store";
+import { useNavigate } from "react-router-dom";
 import AuthUserButton from "../auth/AuthUserButton";
-import { authClient } from "@/lib/auth-client";
 
 export default function NavbarComponent() {
   const navItems = [
@@ -33,7 +34,11 @@ export default function NavbarComponent() {
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
-  const { data: session } = authClient.useSession();
+  const { isAuthenticated } = useAuthStore();
+  const navigate = useNavigate();
+  const handleDashboard = () => {
+    navigate("/dashboard");
+  };
   return (
     <div className="relative w-full">
       <Navbar>
@@ -41,10 +46,12 @@ export default function NavbarComponent() {
         <NavBody>
           <NavbarLogo />
           <NavItems items={navItems} />
+
           <div className="flex items-center gap-4">
-            {session
+            {isAuthenticated
               ?
               <>
+                <NavbarButton variant="primary" onClick={handleDashboard}>Dashboard</NavbarButton>
                 <AuthUserButton />
               </>
               :
@@ -82,10 +89,10 @@ export default function NavbarComponent() {
               </a>
             ))}
             <div className="flex w-full flex-col gap-4">
-              {session
+              {isAuthenticated
                 ?
                 <>
-                  <AuthUserButton />
+                  Dashboard
                 </>
                 :
                 <>
