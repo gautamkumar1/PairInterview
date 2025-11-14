@@ -14,6 +14,13 @@ export type ExecuteResult = {
     error: string | null;
 };
 
+export type TestCaseResult = {
+    passed: boolean;
+    actual: string;
+    expected: string;
+    testCaseNumber: number;
+};
+
 const isProblemId = (value: string): value is ProblemId =>
     Object.prototype.hasOwnProperty.call(PROBLEMS, value);
 
@@ -30,6 +37,7 @@ function ProblemDetailsPage() {
     );
     const [output, setOutput] = useState<ExecuteResult | null>(null);
     const [isRunning, setIsRunning] = useState(false);
+    const [testCaseResults, setTestCaseResults] = useState<TestCaseResult[]>([]);
 
     const currentProblem = PROBLEMS[currentProblemId];
     // update problem when URL param changes
@@ -38,6 +46,7 @@ function ProblemDetailsPage() {
             setCurrentProblemId(id);
             setCode(PROBLEMS[id].starterCode[selectedLanguage]);
             setOutput(null);
+            setTestCaseResults([]);
         }
     }, [id, selectedLanguage]);
 
@@ -46,6 +55,7 @@ function ProblemDetailsPage() {
         setSelectedLanguage(newLang);
         setCode(currentProblem.starterCode[newLang]);
         setOutput(null);
+        setTestCaseResults([]);
     };
 
     const handleProblemChange = (newProblemId: string) => navigate(`/problem/${newProblemId}`);
@@ -88,9 +98,34 @@ function ProblemDetailsPage() {
     
         return normalizedActual === normalizedExpected;
       };
+
+      const getTestCaseResults = (actualOutput: string, expectedOutput: string): TestCaseResult[] => {
+        const actualLines = actualOutput.trim().split("\n").filter(line => line.trim().length > 0);
+        const expectedLines = expectedOutput.trim().split("\n").filter(line => line.trim().length > 0);
+        
+        const results: TestCaseResult[] = [];
+        const maxLength = Math.max(actualLines.length, expectedLines.length);
+        
+        for (let i = 0; i < maxLength; i++) {
+          const actual = actualLines[i] || "";
+          const expected = expectedLines[i] || "";
+          const normalizedActual = normalizeOutput(actual);
+          const normalizedExpected = normalizeOutput(expected);
+          
+          results.push({
+            testCaseNumber: i + 1,
+            actual: actual || "(no output)",
+            expected: expected || "(no expected)",
+            passed: normalizedActual === normalizedExpected,
+          });
+        }
+        
+        return results;
+      };
       const handleRunCode = async () => {
         setIsRunning(true);
         setOutput(null);
+        setTestCaseResults([]);
     
         const result = await executeCode(selectedLanguage, code);
         setOutput(result);
@@ -98,8 +133,11 @@ function ProblemDetailsPage() {
     
         // check if code executed successfully and matches expected output
     
-        if (result.success) {
+        if (result.success && result.output) {
           const expectedOutput = currentProblem.expectedOutput[selectedLanguage];
+          const testResults = getTestCaseResults(result.output, expectedOutput);
+          setTestCaseResults(testResults);
+          
           const testsPassed = checkIfTestsPassed(result.output, expectedOutput);
     
           if (testsPassed) {
@@ -113,8 +151,8 @@ function ProblemDetailsPage() {
         }
       };
       return (
-        <div className="h-screen bg-base-100 flex flex-col">
-          <div className="flex-1">
+        <div className="h-screen bg-base-100 flex flex-col overflow-hidden">
+          <div className="flex-1 min-h-0">
             <PanelGroup direction="horizontal">
               {/* left panel- problem desc */}
               <Panel defaultSize={40} minSize={30}>
@@ -147,8 +185,8 @@ function ProblemDetailsPage() {
     
                   {/* Bottom panel - Output Panel*/}
     
-                  <Panel defaultSize={30} minSize={30}>
-                    <OutputPanel output={output} />
+                  <Panel defaultSize={30} minSize={20}>
+                    <OutputPanel output={output} testCaseResults={testCaseResults} />
                   </Panel>
                 </PanelGroup>
               </Panel>

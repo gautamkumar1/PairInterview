@@ -26,7 +26,7 @@ export default function CodeEditorPanel({
   return (
     <div className="h-full flex flex-col bg-background border-l border-border">
       {/* Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card/60 backdrop-blur-sm">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card/60 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-3">
           <img
             src={LANGUAGE_CONFIG[selectedLanguage].icon}
@@ -71,7 +71,7 @@ export default function CodeEditorPanel({
       </div>
 
       {/* Code Editor */}
-      <div className="flex-1 bg-card">
+      <div className="flex-1 bg-card min-h-0">
         <Editor
           height="100%"
           language={LANGUAGE_CONFIG[selectedLanguage].monacoLang}
