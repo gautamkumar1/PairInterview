@@ -166,7 +166,9 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       >
         {/* Header with mobile menu button */}
         <div className="flex items-center justify-between p-3 sm:p-4 border-b border-sidebar-border shrink-0">
-          <h2 className="text-base sm:text-lg font-semibold font-mono truncate">PairInterview</h2>
+          <NavLink to="/">
+            <h2 className="text-base sm:text-lg font-semibold font-mono truncate">PairInterview</h2>
+          </NavLink>
           <Button
             variant="ghost"
             size="icon"

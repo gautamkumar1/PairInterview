@@ -14,8 +14,6 @@ import { useState } from "react";
 import AuthModal from "../auth/AuthModal";
 import useAuthStore from "@/zustand/store";
 import { useNavigate } from "react-router-dom";
-import AuthUserButton from "../auth/AuthUserButton";
-
 export default function NavbarComponent() {
   const navItems = [
     {
@@ -52,7 +50,6 @@ export default function NavbarComponent() {
               ?
               <>
                 <NavbarButton variant="primary" onClick={handleDashboard}>Dashboard</NavbarButton>
-                <AuthUserButton />
               </>
               :
               <>
