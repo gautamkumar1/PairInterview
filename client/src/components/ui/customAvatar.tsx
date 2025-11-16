@@ -8,15 +8,28 @@ interface CustomAvatarProps {
     user: {
       name: string;
       email: string;
-      image: string;
+      image?: string | null;
     };
   };
 }
+
+// Helper function to get user initials
+const getInitials = (name: string): string => {
+  if (!name) return "?";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+  return name[0].toUpperCase();
+};
+
 const CustomAvatar: React.FC<CustomAvatarProps> = ({ data }) => {
   const [open, setOpen] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { verifySession } = useAuthStore();
+  
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -27,6 +40,12 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ data }) => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Reset image error when image changes
+  useEffect(() => {
+    setImageError(false);
+  }, [data?.user.image]);
+
   const handleSignOut = async () => {
     try {
       await authClient.signOut();
@@ -40,19 +59,30 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ data }) => {
       toast.error("Sign out failed. Please try again.");
     }
   };
+
+  const hasValidImage = data?.user.image && !imageError;
+  const initials = getInitials(data?.user.name || "");
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Avatar button */}
       <button
         id="avatarButton"
         onClick={() => setOpen((prev) => !prev)}
-        className="w-10 h-10 rounded-full overflow-hidden border border-border focus:outline-none focus:ring-2 focus:ring-ring"
+        className="w-10 h-10 rounded-full overflow-hidden border border-border focus:outline-none focus:ring-2 focus:ring-ring bg-muted flex items-center justify-center"
       >
-        <img
-          src={data?.user.image}
-          alt="User dropdown"
-          className="w-full h-full object-cover"
-        />
+        {hasValidImage ? (
+          <img
+            src={data.user.image!}
+            alt="User dropdown"
+            className="w-full h-full object-cover"
+            onError={() => setImageError(true)}
+          />
+        ) : (
+          <span className="text-sm font-semibold text-foreground">
+            {initials}
+          </span>
+        )}
       </button>
 
       {/* Dropdown menu */}

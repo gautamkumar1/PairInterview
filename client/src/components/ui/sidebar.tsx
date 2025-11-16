@@ -17,7 +17,7 @@ interface SessionData {
   user: {
     name: string;
     email: string;
-    image: string;
+    image?: string | null;
   };
 }
 
