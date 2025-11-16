@@ -24,7 +24,7 @@ export default function MainLayout() {
         <Outlet />
       </main>
       {
-        !isProblemPage && (
+        !isProblemPage && !isDashboard && (
           <footer>
           <MinimalSocialsFooter />
         </footer>

@@ -150,7 +150,7 @@ export default function ProblemsPage() {
                 {/* Right */}
                 <Button
                   variant="ghost"
-                  onClick={() => navigate(`/problem/${titleToSlug(problem.title)}`)}
+                  onClick={() => navigate(`/dashboard/problem/${titleToSlug(problem.title)}`)}
                   className="text-xs sm:text-sm text-primary hover:text-primary/80 flex items-center gap-1"
                 >
                   Solve

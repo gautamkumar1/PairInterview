@@ -5,6 +5,8 @@ import ProblemsPage from "./pages/ProblemsPage";
 import DashboardLayout from "./layouts/DashboardLayout";
 import Dashboard from "./components/ui/dashboard";
 import ProblemDetailsPage from "./pages/ProblemDetailsPage";
+import LeaderboardPage from "./pages/LeaderboardPage";
+import ProfilePage from "./pages/ProfilePage";
 
 const router = createBrowserRouter([
   {
@@ -13,19 +15,14 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Home /> },
       {
-        path:"problems",
-        element:<ProblemsPage/>
-      },
-      {
-        path:"problem/:id",
-        element:<ProblemDetailsPage/>
-      },
-      // for later use
-      {
         path: "dashboard",
         element: <DashboardLayout />, // ✅ nested layout
         children: [
           { index: true, element: <Dashboard /> },
+          { path: "problems", element: <ProblemsPage /> },
+          { path: "problem/:id", element: <ProblemDetailsPage /> },
+          { path: "leaderboard", element: <LeaderboardPage /> },
+          { path: "profile", element: <ProfilePage /> },
         ],
       },
     ],

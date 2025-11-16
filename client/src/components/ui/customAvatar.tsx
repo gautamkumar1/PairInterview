@@ -59,7 +59,7 @@ const CustomAvatar: React.FC<CustomAvatarProps> = ({ data }) => {
       {open && (
         <div
           id="userDropdown"
-          className="absolute left-0 mt-2 w-44 z-10 bg-card text-card-foreground border border-border rounded-lg shadow-md divide-y divide-border animate-fade-in"
+          className="absolute left-0 bottom-full mb-2 w-44 z-10 bg-card text-card-foreground border border-border rounded-lg shadow-md divide-y divide-border animate-fade-in"
         >
           {/* User info */}
           <div className="px-4 py-3 text-sm">

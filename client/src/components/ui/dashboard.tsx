@@ -1,5 +1,15 @@
 import { useState } from "react"
-import { Play, Zap, TrendingUp, Clock, Target, Activity, Users, LogIn, RotateCcw } from "lucide-react"
+import {
+  Play,
+  Zap,
+  TrendingUp,
+  Clock,
+  Target,
+  Activity,
+  Users,
+  LogIn,
+  RotateCcw,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { NavLink } from "react-router-dom"
@@ -118,15 +128,12 @@ export default function Dashboard() {
     }
 
     return (
-        <div className="flex flex-col h-screen overflow-hidden">
-            {/* Dashboard Content */}
-            <div className="flex-1 overflow-auto">
-                <div className="p-6 space-y-6">
+        <div className="p-6 space-y-6">
                     {/* Quick Start Section */}
                     <div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <Button asChild className="h-24 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-lg rounded-lg flex items-center justify-center gap-3">
-                                <NavLink to="/problems" target="_blank">
+                                <NavLink to="/dashboard/problems">
                                     <Play className="w-6 h-6" />
                                     Start Solo Practice
                                 </NavLink>
@@ -340,8 +347,6 @@ export default function Dashboard() {
                             </CardContent>
                         </Card>
                     </div>
-                </div>
-            </div>
         </div>
     )
 }

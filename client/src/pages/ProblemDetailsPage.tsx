@@ -71,7 +71,7 @@ function ProblemDetailsPage() {
         setTestCaseResults([]);
     };
 
-    const handleProblemChange = (newProblemId: string) => navigate(`/problem/${newProblemId}`);
+    const handleProblemChange = (newProblemId: string) => navigate(`/dashboard/problem/${newProblemId}`);
 
     const handleCodeChange = (newCode: React.SetStateAction<string>) => {
         setCodeByLanguage(prev => ({
